@@ -38,6 +38,19 @@ The app parses the three core components of a Star's identity found in the Galac
 
 ---
 
+## 🧭 Stellar Class Key
+
+| Color | Classes | Drive Required | Primary Resource |
+| :--- | :--- | :--- | :--- |
+| 🟡 **Yellow** | F, G | Standard | Copper |
+| 🔴 **Red** | K, M | Cadmium | Cadmium |
+| 🟢 **Green** | E | Emeril | Emeril |
+| 🔵 **Blue** | B, O | Indium | Indium |
+| 🟣 **Purple** | X, Y | Atlantid | Quartzite |
+
+*Note: Purple systems are hidden until the completion of 'In Stellar Multitudes'.*
+
+---
 ## 📥 Installation
 
 1. **Clone the repository:**
