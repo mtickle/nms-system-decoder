@@ -2,21 +2,31 @@ import { useMemo, useState } from 'react';
 
 const DATA = {
   letters: {
-    O: { name: 'Blue', drive: 'Indium', desc: 'Hottest, rarest, exotic planets.', color: 'text-indigo-400', bg: 'bg-indigo-900/20', border: 'border-indigo-500' },
-    B: { name: 'Blue-White', drive: 'Indium', desc: 'Very hot, high-value resources.', color: 'text-blue-300', bg: 'bg-blue-900/20', border: 'border-blue-500' },
-    A: { name: 'White', drive: 'Cadmium', desc: 'Hot, standard distribution.', color: 'text-slate-100', bg: 'bg-slate-700/20', border: 'border-slate-400' },
-    F: { name: 'Yellow-White', drive: 'None', desc: 'Warm, high chance of Lush biomes.', color: 'text-yellow-100', bg: 'bg-yellow-600/10', border: 'border-yellow-200' },
-    G: { name: 'Yellow', drive: 'None', desc: 'Temperate, Earth-like probability.', color: 'text-yellow-400', bg: 'bg-yellow-500/10', border: 'border-yellow-500' },
-    K: { name: 'Yellow-Orange', drive: 'Emeril', desc: 'Cool, diverse desert/arid types.', color: 'text-orange-400', bg: 'bg-orange-900/20', border: 'border-orange-500' },
-    M: { name: 'Red', drive: 'Emeril', desc: 'Coolest, common, many dead moons.', color: 'text-red-400', bg: 'bg-red-900/20', border: 'border-red-500' },
-    E: { name: 'Green', drive: 'Viridium', desc: 'Exotic/Glitch planet specialist.', color: 'text-green-400', bg: 'bg-green-900/20', border: 'border-green-500' },
+    // YELLOW (Standard)
+    F: { name: 'Yellow-White', drive: 'Standard', metal: 'Copper', desc: 'Common. High chance of Lush biomes.', color: 'text-yellow-100', bg: 'bg-yellow-500/10', border: 'border-yellow-200' },
+    G: { name: 'Yellow', drive: 'Standard', metal: 'Copper', desc: 'Sun-like. Balanced and common.', color: 'text-yellow-400', bg: 'bg-yellow-600/10', border: 'border-yellow-500' },
+
+    // RED/ORANGE (Cadmium)
+    K: { name: 'Yellow-Orange', drive: 'Cadmium Drive', metal: 'Cadmium', desc: 'Uncommon. Often uncharted. Desert/Arid worlds.', color: 'text-orange-500', bg: 'bg-orange-900/20', border: 'border-orange-600' },
+    M: { name: 'Red', drive: 'Cadmium Drive', metal: 'Cadmium', desc: 'Coolest standard star. 95% are uncharted.', color: 'text-red-500', bg: 'bg-red-900/20', border: 'border-red-600' },
+
+    // GREEN (Emeril)
+    E: { name: 'Green', drive: 'Emeril Drive', metal: 'Emeril', desc: 'Rare. Specialized exotic and glitch biomes.', color: 'text-green-400', bg: 'bg-green-900/20', border: 'border-green-500' },
+
+    // BLUE (Indium)
+    B: { name: 'Blue-White', drive: 'Indium Drive', metal: 'Indium', desc: 'Very hot and rare. Contains high-value resources.', color: 'text-cyan-300', bg: 'bg-cyan-900/10', border: 'border-cyan-400' },
+    O: { name: 'Blue', drive: 'Indium Drive', metal: 'Indium', desc: 'Hottest/Rarest. Most extreme planetary conditions.', color: 'text-blue-400', bg: 'bg-blue-900/20', border: 'border-blue-500' },
+
+    // PURPLE (Atlantid)
+    X: { name: 'Deep Purple', drive: 'Atlantid Drive', metal: 'Quartzite', desc: 'Void-touched. Gas Giants & Deep Oceans present.', color: 'text-purple-400', bg: 'bg-purple-900/30', border: 'border-purple-600' },
+    Y: { name: 'Purple Dwarf', drive: 'Atlantid Drive', metal: 'Quartzite', desc: 'Hidden spectrum. High probability of Ruined planets.', color: 'text-violet-500', bg: 'bg-violet-900/30', border: 'border-violet-600' },
   },
   suffixes: {
-    p: { label: 'Peculiar', note: 'Likely contains Anomalous/Glitch planets.' },
-    f: { label: 'Fresh', note: 'Water present. Look for oceans.' },
-    m: { label: 'Metallic', note: 'Increased yield of rare metals.' },
-    e: { label: 'Emission', note: 'High radiation / Rare element spikes.' },
-    v: { label: 'Variable', note: 'Unstable star; chaotic weather patterns.' },
+    p: { label: 'Peculiar', note: 'Anomalous/Glitch planetary signatures.' },
+    f: { label: 'Fresh', note: 'Liquid water detected. (Oceans)' },
+    m: { label: 'Metallic', note: 'Rich metal deposits in crust.' },
+    e: { label: 'Emission', note: 'High radiation / Activated minerals.' },
+    v: { label: 'Variable', note: 'Unstable star; volatile weather.' },
   }
 };
 
@@ -25,7 +35,7 @@ export default function App() {
 
   const analysis = useMemo(() => {
     const cleaned = code.trim();
-    const match = cleaned.match(/^([OBAFGKME])([0-9])([a-z]+)?$/i);
+    const match = cleaned.match(/^([OBAFGKME XY])([0-9])([a-z]+)?$/i);
     if (!match) return null;
 
     const [_, char, tempStr, suffStr] = match;
@@ -36,12 +46,13 @@ export default function App() {
     const star = DATA.letters[starLetter];
     const traits = suffixes.split('').filter(s => DATA.suffixes[s]).map(s => DATA.suffixes[s]);
 
-    // Resource & Biome Logic
+    // Resource Logic
     const isExtreme = suffixes.includes('e');
-    const mainMetal = star.drive === 'None' ? 'Copper' : star.drive;
+    const isPurple = ['X', 'Y'].includes(starLetter);
 
     let primaryBiome = "Balanced";
-    if (tempDigit <= 3) primaryBiome = "Scorched / Desert";
+    if (isPurple) primaryBiome = "Gas Giant / Ruined";
+    else if (tempDigit <= 3) primaryBiome = "Scorched / Desert";
     else if (tempDigit >= 7) primaryBiome = "Frozen / Tundra";
     else primaryBiome = "Lush / Tropical";
 
@@ -51,8 +62,8 @@ export default function App() {
       traits,
       projections: {
         primaryBiome,
-        commonMetal: isExtreme ? `Activated ${mainMetal}` : mainMetal,
-        specialty: suffixes.includes('f') ? "Salt / Cyto-phosphate" : "Carbon / Ferrite"
+        commonMetal: isExtreme && star.metal !== 'Quartzite' ? `Activated ${star.metal}` : star.metal,
+        specialty: isPurple ? "High chance: Deep Oceans" : (suffixes.includes('f') ? "Salt / Cyto-phosphate" : "Carbon / Ferrite")
       }
     };
   }, [code]);
@@ -61,74 +72,68 @@ export default function App() {
     <div className="min-h-screen bg-black text-slate-300 font-mono p-4 flex flex-col items-center justify-center">
       <div className="w-full max-w-md">
         <header className="mb-8 text-center">
-          <h1 className="text-xs uppercase tracking-[0.3em] text-cyan-500 mb-2">Stellar Analyzer v1.1</h1>
-          <div className="h-1 w-12 bg-cyan-500 mx-auto"></div>
+          <h1 className="text-xs uppercase tracking-[0.4em] text-cyan-500 mb-2">Stellar Multi-Tool</h1>
+          <div className="h-[1px] w-24 bg-gradient-to-r from-transparent via-cyan-500 to-transparent mx-auto"></div>
         </header>
 
         <input
           type="text"
           maxLength={6}
-          placeholder="ENTER CLASS (e.g. B5pf)"
-          className="w-full bg-slate-900 border-b-2 border-slate-700 p-4 text-2xl text-center outline-none focus:border-cyan-500 transition-colors uppercase tracking-widest text-white placeholder:opacity-20"
+          placeholder="ENTER CODE (B5PF)"
+          className="w-full bg-transparent border-b border-slate-800 p-4 text-3xl text-center outline-none focus:border-cyan-500 transition-all uppercase tracking-[0.2em] text-white placeholder:opacity-10"
           onChange={(e) => setCode(e.target.value)}
           value={code}
         />
 
         {analysis ? (
-          <div className={`mt-8 p-6 border-l-4 rounded-r-lg ${analysis.star.bg} ${analysis.star.border} animate-in fade-in slide-in-from-bottom-4 duration-500`}>
-            {/* Header Section */}
-            <div className="flex justify-between items-start mb-4">
+          <div className={`mt-8 p-6 border-t-2 rounded-b-xl ${analysis.star.bg} ${analysis.star.border} animate-in fade-in zoom-in-95 duration-300`}>
+            <div className="flex justify-between items-start mb-6">
               <div>
-                <h2 className={`text-3xl font-black uppercase ${analysis.star.color}`}>{analysis.star.name}</h2>
-                <p className="text-sm opacity-70">Hyperdrive: <span className="text-white font-bold">{analysis.star.drive}</span></p>
+                <h2 className={`text-2xl font-black uppercase tracking-tight ${analysis.star.color}`}>{analysis.star.name} System</h2>
+                <p className="text-[10px] uppercase tracking-widest opacity-60">Requires: <span className="text-white">{analysis.star.drive}</span></p>
               </div>
-              <div className="text-right">
-                <span className="text-4xl font-light">{analysis.temp}</span>
-                <p className="text-[10px] uppercase opacity-50">Heat Index</p>
+              <div className="bg-white/5 p-2 rounded text-center min-w-[50px]">
+                <span className="text-2xl font-bold block leading-none">{analysis.temp}</span>
+                <span className="text-[8px] uppercase opacity-50">Heat</span>
               </div>
             </div>
 
-            <p className="mb-6 text-sm italic border-b border-white/5 pb-4">"{analysis.star.desc}"</p>
+            <p className="mb-6 text-xs leading-relaxed opacity-80 border-l-2 border-white/10 pl-3">
+              {analysis.star.desc}
+            </p>
 
-            {/* Traits List */}
-            <div className="space-y-4 mb-6">
-              {analysis.traits.length > 0 ? analysis.traits.map(t => (
-                <div key={t.label} className="flex items-start gap-3">
-                  <div className="mt-1 h-2 w-2 bg-cyan-400 rotate-45" />
-                  <div>
-                    <p className="text-xs font-bold uppercase tracking-tighter text-cyan-400">{t.label}</p>
-                    <p className="text-xs opacity-80">{t.note}</p>
+            <div className="grid grid-cols-2 gap-3 mb-6">
+              <div className="bg-black/40 p-3 rounded border border-white/5">
+                <p className="text-[9px] uppercase opacity-40 mb-1 font-bold">Projected Biome</p>
+                <p className="text-xs text-white font-bold uppercase">{analysis.projections.primaryBiome}</p>
+              </div>
+              <div className="bg-black/40 p-3 rounded border border-white/5">
+                <p className="text-[9px] uppercase opacity-40 mb-1 font-bold">Primary Resource</p>
+                <p className={`text-xs font-bold uppercase ${analysis.star.color}`}>{analysis.projections.commonMetal}</p>
+              </div>
+            </div>
+
+            {analysis.traits.length > 0 && (
+              <div className="space-y-3 pt-4 border-t border-white/5">
+                {analysis.traits.map(t => (
+                  <div key={t.label} className="flex items-center gap-3">
+                    <div className="h-1 w-1 bg-cyan-400"></div>
+                    <div>
+                      <span className="text-[10px] font-bold uppercase text-cyan-400">{t.label}: </span>
+                      <span className="text-[10px] opacity-70">{t.note}</span>
+                    </div>
                   </div>
-                </div>
-              )) : (
-                <p className="text-[10px] uppercase opacity-40 italic font-bold">No standard peculiarities detected</p>
-              )}
-            </div>
-
-            {/* Projection Grid */}
-            <div className="pt-6 border-t border-white/10">
-              <h3 className="text-[10px] uppercase tracking-widest text-cyan-500 mb-3 font-bold">Surface Scan Projections</h3>
-              <div className="grid grid-cols-2 gap-3">
-                <div className="bg-black/40 p-3 rounded border border-white/5">
-                  <p className="text-[9px] uppercase opacity-50 mb-1">Dominant Biome</p>
-                  <p className="text-xs text-white font-bold">{analysis.projections.primaryBiome}</p>
-                </div>
-                <div className="bg-black/40 p-3 rounded border border-white/5">
-                  <p className="text-[9px] uppercase opacity-50 mb-1">Primary Mineral</p>
-                  <p className={`text-xs font-bold ${analysis.star.color}`}>
-                    {analysis.projections.commonMetal}
-                  </p>
-                </div>
+                ))}
               </div>
-              <p className="mt-3 text-[9px] opacity-40 text-center uppercase">System potential: {analysis.projections.specialty} sources detected</p>
-            </div>
+            )}
+
+            <p className="mt-6 text-[8px] text-center opacity-30 uppercase tracking-[0.2em]">
+              Scan Analysis: {analysis.projections.specialty}
+            </p>
           </div>
         ) : (
-          <div className="mt-12 text-center">
-            <p className="text-xs opacity-40 animate-pulse uppercase tracking-tighter">Awaiting valid spectral coordinates...</p>
-            <div className="flex justify-center gap-2 mt-4 opacity-20">
-              {['O', 'B', 'A', 'F', 'G', 'K', 'M', 'E'].map(l => <span key={l} className="text-[10px]">{l}</span>)}
-            </div>
+          <div className="mt-12 text-center opacity-20">
+            <p className="text-[10px] uppercase tracking-[0.3em]">Awaiting Spectral Input</p>
           </div>
         )}
       </div>
