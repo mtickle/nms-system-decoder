@@ -1,3 +1,6 @@
+[![Deploy to GitHub Pages](https://github.com/mtickle/nms-system-decoder/actions/workflows/deploy.yml/badge.svg)](https://github.com/mtickle/nms-system-decoder/actions/workflows/deploy.yml)
+
+
 # 🌌 Stellar Scanner v1.1
 ### *No Man's Sky Spectral Classification & Resource Projection Tool*
 
