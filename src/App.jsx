@@ -1,25 +1,16 @@
-import { useMemo, useState } from 'react';
+import { useMemo, useState, useEffect } from 'react';
 
 const DATA = {
   letters: {
-    // YELLOW (Standard)
-    F: { name: 'Yellow-White', drive: 'Standard', metal: 'Copper', desc: 'Common. High chance of Lush biomes.', color: 'text-yellow-100', bg: 'bg-yellow-500/10', border: 'border-yellow-200' },
-    G: { name: 'Yellow', drive: 'Standard', metal: 'Copper', desc: 'Sun-like. Balanced and common.', color: 'text-yellow-400', bg: 'bg-yellow-600/10', border: 'border-yellow-500' },
-
-    // RED/ORANGE (Cadmium)
-    K: { name: 'Yellow-Orange', drive: 'Cadmium Drive', metal: 'Cadmium', desc: 'Uncommon. Often uncharted. Desert/Arid worlds.', color: 'text-orange-500', bg: 'bg-orange-900/20', border: 'border-orange-600' },
-    M: { name: 'Red', drive: 'Cadmium Drive', metal: 'Cadmium', desc: 'Coolest standard star. 95% are uncharted.', color: 'text-red-500', bg: 'bg-red-900/20', border: 'border-red-600' },
-
-    // GREEN (Emeril)
-    E: { name: 'Green', drive: 'Emeril Drive', metal: 'Emeril', desc: 'Rare. Specialized exotic and glitch biomes.', color: 'text-green-400', bg: 'bg-green-900/20', border: 'border-green-500' },
-
-    // BLUE (Indium)
-    B: { name: 'Blue-White', drive: 'Indium Drive', metal: 'Indium', desc: 'Very hot and rare. Contains high-value resources.', color: 'text-cyan-300', bg: 'bg-cyan-900/10', border: 'border-cyan-400' },
-    O: { name: 'Blue', drive: 'Indium Drive', metal: 'Indium', desc: 'Hottest/Rarest. Most extreme planetary conditions.', color: 'text-blue-400', bg: 'bg-blue-900/20', border: 'border-blue-500' },
-
-    // PURPLE (Atlantid)
-    X: { name: 'Deep Purple', drive: 'Atlantid Drive', metal: 'Quartzite', desc: 'Void-touched. Gas Giants & Deep Oceans present.', color: 'text-purple-400', bg: 'bg-purple-900/30', border: 'border-purple-600' },
-    Y: { name: 'Purple Dwarf', drive: 'Atlantid Drive', metal: 'Quartzite', desc: 'Hidden spectrum. High probability of Ruined planets.', color: 'text-violet-500', bg: 'bg-violet-900/30', border: 'border-violet-600' },
+    F: { name: 'Yellow-White', drive: 'Standard', metal: 'Copper', desc: 'Common. High chance of Lush biomes.', color: 'text-yellow-200', bg: 'bg-yellow-500/15', border: 'border-yellow-400/50' },
+    G: { name: 'Yellow', drive: 'Standard', metal: 'Copper', desc: 'Sun-like. Balanced and common.', color: 'text-yellow-400', bg: 'bg-yellow-600/15', border: 'border-yellow-500/50' },
+    K: { name: 'Yellow-Orange', drive: 'Cadmium Drive', metal: 'Cadmium', desc: 'Uncommon. Often uncharted. Desert/Arid worlds.', color: 'text-orange-400', bg: 'bg-orange-600/15', border: 'border-orange-500/50' },
+    M: { name: 'Red', drive: 'Cadmium Drive', metal: 'Cadmium', desc: 'Coolest standard star. 95% are uncharted.', color: 'text-red-400', bg: 'bg-red-600/15', border: 'border-red-500/50' },
+    E: { name: 'Green', drive: 'Emeril Drive', metal: 'Emeril', desc: 'Rare. Specialized exotic and glitch biomes.', color: 'text-emerald-400', bg: 'bg-emerald-600/15', border: 'border-emerald-500/50' },
+    B: { name: 'Blue-White', drive: 'Indium Drive', metal: 'Indium', desc: 'Very hot and rare. Contains high-value resources.', color: 'text-cyan-300', bg: 'bg-cyan-600/15', border: 'border-cyan-400/50' },
+    O: { name: 'Blue', drive: 'Indium Drive', metal: 'Indium', desc: 'Hottest/Rarest. Most extreme planetary conditions.', color: 'text-blue-400', bg: 'bg-blue-600/15', border: 'border-blue-500/50' },
+    X: { name: 'Deep Purple', drive: 'Atlantid Drive', metal: 'Quartzite', desc: 'Void-touched. Gas Giants & Deep Oceans present.', color: 'text-purple-300', bg: 'bg-purple-600/15', border: 'border-purple-500/50' },
+    Y: { name: 'Purple Dwarf', drive: 'Atlantid Drive', metal: 'Quartzite', desc: 'Hidden spectrum. High probability of Ruined planets.', color: 'text-violet-300', bg: 'bg-violet-600/15', border: 'border-violet-500/50' },
   },
   suffixes: {
     p: { label: 'Peculiar', note: 'Anomalous/Glitch planetary signatures.' },
@@ -32,6 +23,29 @@ const DATA = {
 
 export default function App() {
   const [code, setCode] = useState('');
+  const [demoCodes, setDemoCodes] = useState([]);
+
+  const generateCodes = () => {
+    const letters = Object.keys(DATA.letters);
+    const suffixes = Object.keys(DATA.suffixes);
+
+    const newCodes = Array.from({ length: 4 }, () => {
+      const l = letters[Math.floor(Math.random() * letters.length)];
+      const d = Math.floor(Math.random() * 10);
+      const numSuffixes = Math.floor(Math.random() * 3); // 0 to 2 suffixes
+
+      const shuffledSuffixes = [...suffixes].sort(() => 0.5 - Math.random());
+      const s = shuffledSuffixes.slice(0, numSuffixes).join('');
+
+      return `${l}${d}${s}`.toUpperCase();
+    });
+
+    setDemoCodes(newCodes);
+  };
+
+  useEffect(() => {
+    generateCodes();
+  }, []);
 
   const analysis = useMemo(() => {
     const cleaned = code.trim();
@@ -44,9 +58,10 @@ export default function App() {
     const suffixes = (suffStr || '').toLowerCase();
 
     const star = DATA.letters[starLetter];
-    const traits = suffixes.split('').filter(s => DATA.suffixes[s]).map(s => DATA.suffixes[s]);
+    // If somehow a valid letter by regex isn't in data, fail gracefully
+    if (!star) return null;
 
-    // Resource Logic
+    const traits = suffixes.split('').filter(s => DATA.suffixes[s]).map(s => DATA.suffixes[s]);
     const isExtreme = suffixes.includes('e');
     const isPurple = ['X', 'Y'].includes(starLetter);
 
@@ -69,73 +84,101 @@ export default function App() {
   }, [code]);
 
   return (
-    <div className="min-h-screen bg-black text-slate-300 font-mono p-4 flex flex-col items-center justify-center">
+    <div className="min-h-screen bg-slate-900 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-slate-800 to-slate-950 text-slate-200 font-mono p-4 sm:p-6 flex flex-col items-center justify-center">
       <div className="w-full max-w-md">
         <header className="mb-8 text-center">
-          <h1 className="text-xs uppercase tracking-[0.4em] text-cyan-500 mb-2">Stellar Multi-Tool</h1>
-          <div className="h-[1px] w-24 bg-gradient-to-r from-transparent via-cyan-500 to-transparent mx-auto"></div>
+          <h1 className="text-xs font-bold uppercase tracking-[0.4em] text-cyan-400 mb-3 shadow-cyan-500/50 drop-shadow-md">Stellar Multi-Tool</h1>
+          <div className="h-[2px] w-16 bg-gradient-to-r from-transparent via-cyan-500 to-transparent mx-auto rounded-full"></div>
         </header>
 
-        <input
-          type="text"
-          maxLength={6}
-          placeholder="ENTER CODE (B5PF)"
-          className="w-full bg-transparent border-b border-slate-800 p-4 text-3xl text-center outline-none focus:border-cyan-500 transition-all uppercase tracking-[0.2em] text-white placeholder:opacity-10"
-          onChange={(e) => setCode(e.target.value)}
-          value={code}
-        />
+        <div className="relative group">
+          <input
+            type="text"
+            maxLength={6}
+            placeholder="ENTER CODE"
+            className="w-full bg-slate-800/60 border border-slate-600 rounded-xl p-5 text-3xl text-center outline-none focus:border-cyan-400 focus:bg-slate-800 focus:ring-2 focus:ring-cyan-400/20 transition-all uppercase tracking-[0.2em] text-white placeholder:text-slate-500 shadow-inner backdrop-blur-sm"
+            onChange={(e) => setCode(e.target.value)}
+            value={code}
+          />
+        </div>
 
         {analysis ? (
-          <div className={`mt-8 p-6 border-t-2 rounded-b-xl ${analysis.star.bg} ${analysis.star.border} animate-in fade-in zoom-in-95 duration-300`}>
+          <div className={`mt-8 p-6 border-t-4 rounded-xl shadow-2xl backdrop-blur-md bg-slate-800/40 ${analysis.star.bg} ${analysis.star.border} animate-in fade-in zoom-in-95 duration-300`}>
             <div className="flex justify-between items-start mb-6">
               <div>
-                <h2 className={`text-2xl font-black uppercase tracking-tight ${analysis.star.color}`}>{analysis.star.name} System</h2>
-                <p className="text-[10px] uppercase tracking-widest opacity-60">Requires: <span className="text-white">{analysis.star.drive}</span></p>
+                <h2 className={`text-2xl font-black uppercase tracking-tight drop-shadow-sm ${analysis.star.color}`}>{analysis.star.name} System</h2>
+                <p className="text-[10px] font-semibold uppercase tracking-widest text-slate-400 mt-1">Requires: <span className="text-slate-200">{analysis.star.drive}</span></p>
               </div>
-              <div className="bg-white/5 p-2 rounded text-center min-w-[50px]">
-                <span className="text-2xl font-bold block leading-none">{analysis.temp}</span>
-                <span className="text-[8px] uppercase opacity-50">Heat</span>
+              <div className="bg-slate-900/60 p-2 rounded-lg border border-white/10 text-center min-w-[56px] shadow-inner">
+                <span className="text-2xl font-bold block leading-none text-white">{analysis.temp}</span>
+                <span className="text-[8px] uppercase text-slate-400 font-bold tracking-wider">Heat</span>
               </div>
             </div>
 
-            <p className="mb-6 text-xs leading-relaxed opacity-80 border-l-2 border-white/10 pl-3">
+            <p className="mb-6 text-sm leading-relaxed text-slate-300 border-l-2 border-white/20 pl-3">
               {analysis.star.desc}
             </p>
 
             <div className="grid grid-cols-2 gap-3 mb-6">
-              <div className="bg-black/40 p-3 rounded border border-white/5">
-                <p className="text-[9px] uppercase opacity-40 mb-1 font-bold">Projected Biome</p>
-                <p className="text-xs text-white font-bold uppercase">{analysis.projections.primaryBiome}</p>
+              <div className="bg-slate-900/50 p-3 rounded-lg border border-slate-700/50 shadow-inner">
+                <p className="text-[9px] uppercase text-slate-400 mb-1 font-bold tracking-wider">Projected Biome</p>
+                <p className="text-xs text-white font-bold uppercase tracking-wide">{analysis.projections.primaryBiome}</p>
               </div>
-              <div className="bg-black/40 p-3 rounded border border-white/5">
-                <p className="text-[9px] uppercase opacity-40 mb-1 font-bold">Primary Resource</p>
-                <p className={`text-xs font-bold uppercase ${analysis.star.color}`}>{analysis.projections.commonMetal}</p>
+              <div className="bg-slate-900/50 p-3 rounded-lg border border-slate-700/50 shadow-inner">
+                <p className="text-[9px] uppercase text-slate-400 mb-1 font-bold tracking-wider">Primary Resource</p>
+                <p className={`text-xs font-bold uppercase tracking-wide drop-shadow-sm ${analysis.star.color}`}>{analysis.projections.commonMetal}</p>
               </div>
             </div>
 
             {analysis.traits.length > 0 && (
-              <div className="space-y-3 pt-4 border-t border-white/5">
+              <div className="space-y-3 pt-5 border-t border-slate-700/50">
                 {analysis.traits.map(t => (
-                  <div key={t.label} className="flex items-center gap-3">
-                    <div className="h-1 w-1 bg-cyan-400"></div>
+                  <div key={t.label} className="flex items-center gap-3 bg-slate-800/30 p-2 rounded-md">
+                    <div className="h-1.5 w-1.5 rounded-full bg-cyan-400 shadow-[0_0_8px_rgba(34,211,238,0.8)]"></div>
                     <div>
-                      <span className="text-[10px] font-bold uppercase text-cyan-400">{t.label}: </span>
-                      <span className="text-[10px] opacity-70">{t.note}</span>
+                      <span className="text-[10px] font-bold uppercase text-cyan-300 tracking-wider">{t.label}: </span>
+                      <span className="text-[10px] text-slate-300">{t.note}</span>
                     </div>
                   </div>
                 ))}
               </div>
             )}
 
-            <p className="mt-6 text-[8px] text-center opacity-30 uppercase tracking-[0.2em]">
-              Scan Analysis: {analysis.projections.specialty}
-            </p>
+            <div className="mt-6 pt-4 border-t border-white/5">
+              <p className="text-[9px] text-center text-slate-400 uppercase tracking-[0.2em] font-semibold">
+                Scan Analysis: <span className="text-slate-300">{analysis.projections.specialty}</span>
+              </p>
+            </div>
           </div>
         ) : (
-          <div className="mt-12 text-center opacity-20">
-            <p className="text-[10px] uppercase tracking-[0.3em]">Awaiting Spectral Input</p>
+          <div className="mt-12 text-center text-slate-500">
+            <p className="text-[10px] font-bold uppercase tracking-[0.3em]">Awaiting Spectral Input</p>
           </div>
         )}
+
+        {/* Demo Codes Section */}
+        <div className="mt-12">
+          <div className="flex items-center justify-between mb-3 px-1">
+            <p className="text-[10px] uppercase tracking-widest text-slate-500 font-bold">Detected Signatures</p>
+            <button
+              onClick={generateCodes}
+              className="text-[10px] text-cyan-500 hover:text-cyan-300 uppercase tracking-widest font-bold transition-colors"
+            >
+              Rescan
+            </button>
+          </div>
+          <div className="grid grid-cols-4 gap-2">
+            {demoCodes.map((demoCode, i) => (
+              <button
+                key={`${demoCode}-${i}`}
+                onClick={() => setCode(demoCode)}
+                className="bg-slate-800/50 hover:bg-slate-700/80 border border-slate-700 hover:border-cyan-500/50 text-slate-300 hover:text-white text-xs sm:text-sm font-bold py-3 rounded-lg transition-all tracking-wider shadow-sm active:scale-95"
+              >
+                {demoCode}
+              </button>
+            ))}
+          </div>
+        </div>
       </div>
     </div>
   );
